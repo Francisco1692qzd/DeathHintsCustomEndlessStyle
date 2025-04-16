@@ -1,0 +1,134 @@
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create Noor UI if not already there
+local gui = playerGui:FindFirstChild("Noor")
+if not gui then
+	gui = Instance.new("ScreenGui")
+	gui.Name = "Noor"
+	gui.ResetOnSpawn = false
+	gui.IgnoreGuiInset = true
+	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	gui.Parent = playerGui
+end
+
+-- Create AltGuide frame
+local guide = gui:FindFirstChild("AltGuide")
+if not guide then
+	guide = Instance.new("ImageLabel")
+	guide.Name = "AltGuide"
+	guide.AnchorPoint = Vector2.new(0.5, 0.5)
+	guide.Position = UDim2.new(0.5, 0, 0.5, 0)
+	guide.Size = UDim2.new(1, 0, 1, 0)
+	guide.BackgroundTransparency = 1
+	guide.Image = "rbxassetid://0"
+	guide.ImageTransparency = 1
+	guide.Visible = false
+	guide.Parent = gui
+end
+
+-- Static background
+local static = guide:FindFirstChild("Static") or Instance.new("Frame")
+static.Name = "Static"
+static.BackgroundColor3 = Color3.new(0, 0, 0)
+static.BackgroundTransparency = 1
+static.BorderSizePixel = 0
+static.Size = UDim2.new(1, 0, 1, 0)
+static.Parent = guide
+
+-- Static Image (white noise layer)
+local staticImage = static:FindFirstChild("Static") or Instance.new("ImageLabel")
+staticImage.Name = "Static"
+staticImage.Size = UDim2.new(1, 0, 1, 0)
+staticImage.Position = UDim2.new(0, 0, 0, 0)
+staticImage.BackgroundTransparency = 1
+staticImage.Image = "rbxassetid://236543215" -- Static noise image
+staticImage.ImageTransparency = 1
+staticImage.Parent = static
+
+-- Helpful Dialogue Text
+local dialogue = guide:FindFirstChild("HelpfulDialogue") or Instance.new("TextLabel")
+dialogue.Name = "HelpfulDialogue"
+dialogue.Size = UDim2.new(1, 0, 0.15, 0)
+dialogue.Position = UDim2.new(0, 0, 0.8, 0)
+dialogue.BackgroundTransparency = 1
+dialogue.TextTransparency = 1
+dialogue.Font = Enum.Font.Fondamento
+dialogue.TextColor3 = Color3.new(1, 1, 1)
+dialogue.TextScaled = true
+dialogue.TextWrapped = true
+dialogue.Text = "You died."
+dialogue.Parent = guide
+
+-- DeathTheme Sound
+local theme = guide:FindFirstChild("DeathTheme") or Instance.new("Sound")
+theme.Name = "DeathTheme"
+theme.SoundId = "rbxassetid://76350635489391"
+theme.Volume = 1
+theme.Looped = true
+theme.Parent = guide
+
+-- Glitch Sound
+local pinkSound = guide:FindFirstChild("Pink") or Instance.new("Sound")
+pinkSound.Name = "Pink"
+pinkSound.SoundId = "rbxassetid://9118823106"
+pinkSound.Volume = 1
+pinkSound.Looped = false
+pinkSound.Parent = guide
+
+-- Secondary glitch (overlap)
+local overSound = guide:FindFirstChild("Over") or Instance.new("Sound")
+overSound.Name = "Over"
+overSound.SoundId = "rbxassetid://9118823106"
+overSound.Volume = 1
+overSound.Looped = false
+overSound.Parent = guide
+
+-- 🧟‍♂️ Rebound-style Death Hint Animation
+local messages = {
+	"You died to Rebound.",
+	"Rebound moves quickly and can come from anywhere...",
+	"Hide immediately after hearing its approach.",
+	"Listen closely for its rebounding sound through the halls.",
+	"It may rebound multiple times. Stay hidden until you're sure it's gone."
+}
+
+-- Start visuals
+pinkSound:Play()
+theme:Play()
+guide.Visible = true
+
+game.TweenService:Create(static, TweenInfo.new(1.5), {BackgroundTransparency = 0}):Play()
+game.TweenService:Create(staticImage, TweenInfo.new(1.5), {ImageTransparency = 0.95}):Play()
+game.TweenService:Create(guide, TweenInfo.new(1.5), {ImageTransparency = 0.4}):Play()
+
+wait(1.8)
+
+-- Show messages
+for i, msg in ipairs(messages) do
+	dialogue.Text = msg
+	game.TweenService:Create(dialogue, TweenInfo.new(0.7), {TextTransparency = 0}):Play()
+	wait(2.5)
+	game.TweenService:Create(dialogue, TweenInfo.new(0.7), {TextTransparency = 1}):Play()
+	wait(0.8)
+end
+
+-- 🧼 Fade out & cleanup
+overSound:Play()
+pinkSound.TimePosition = 0
+pinkSound:Stop()
+local stopTheme = game.TweenService:Create(theme, TweenInfo.new(2), {PlaybackSpeed = 0})
+stopTheme:Play()
+stopTheme.Completed:Wait()
+theme:Destroy()
+
+game.TweenService:Create(guide, TweenInfo.new(1.5), {ImageTransparency = 1}):Play()
+game.TweenService:Create(dialogue, TweenInfo.new(1.5), {TextTransparency = 1}):Play()
+game.TweenService:Create(static, TweenInfo.new(1.5), {BackgroundTransparency = 1}):Play()
+game.TweenService:Create(staticImage, TweenInfo.new(1.5), {ImageTransparency = 1}):Play()
+
+wait(1.5)
+
+if playerGui:FindFirstChild("Noor") then
+	playerGui.Noor:Destroy()
+end

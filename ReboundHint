@@ -63,8 +63,9 @@ dialogue.Parent = guide
 -- DeathTheme Sound
 local theme = guide:FindFirstChild("DeathTheme") or Instance.new("Sound")
 theme.Name = "DeathTheme"
-theme.SoundId = "rbxassetid://76350635489391"
+theme.SoundId = "rbxassetid://9046435309"
 theme.Volume = 1
+theme.PlaybackSpeed = 0.8
 theme.Looped = true
 theme.Parent = guide
 
